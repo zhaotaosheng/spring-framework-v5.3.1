@@ -17,6 +17,8 @@ include "spring-context"
 include "spring-context-indexer"
 include "spring-context-support"
 include "spring-core"
+// 个人调试Module
+include 'spring-debug'
 include "kotlin-coroutines"
 project(':kotlin-coroutines').projectDir = file('spring-core/kotlin-coroutines')
 include "spring-expression"
