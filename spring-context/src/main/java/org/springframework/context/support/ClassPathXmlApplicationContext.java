@@ -137,8 +137,9 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	public ClassPathXmlApplicationContext(
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
-
+		// 设置容器的各项初始属性
 		super(parent);
+		// 将配置文件位置解析出来，赋值属性configLocations
 		setConfigLocations(configLocations);
 		if (refresh) {
 			refresh();
