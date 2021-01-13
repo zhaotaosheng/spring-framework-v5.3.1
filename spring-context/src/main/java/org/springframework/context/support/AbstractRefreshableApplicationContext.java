@@ -126,7 +126,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 		try {
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
-			// 拓展定制BeanFactory的一些属性
+			// 拓展定制BeanFactory的一些属性，可以通过context的属性来影响，例如allowBeanDefinitionOverriding、allowCircularReferences
 			customizeBeanFactory(beanFactory);
 			loadBeanDefinitions(beanFactory);
 			this.beanFactory = beanFactory;
@@ -195,6 +195,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
 	 */
 	protected DefaultListableBeanFactory createBeanFactory() {
+		// 初始化，忽略BeanNameAware、BeanFactoryAware、BeanClassLoaderAware
 		return new DefaultListableBeanFactory(getInternalParentBeanFactory());
 	}
 

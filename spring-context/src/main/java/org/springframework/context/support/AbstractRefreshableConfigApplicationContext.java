@@ -80,6 +80,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 			for (int i = 0; i < locations.length; i++) {
 				// 创建StandardEnvironment对象，加载系统属性与环境变量
 				// 创建PropertySourcesPropertyResolver，并生成PropertyPlaceholderHelper解析占位符${key:value}
+				// 将路径上的占位符可以递归解析
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}

@@ -10,6 +10,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Overview {
 
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("overview.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("${USERDOMAIN}.xml");
 	}
 }
