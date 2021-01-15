@@ -8,17 +8,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author ZhaoTaoSheng
  * @since 2021/1/13 10:26
  */
-public class MyTest {
+public class TestCustomLabel {
 
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:day03/application.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:day03/custom-label.xml");
 		Address address = context.getBean(Address.class);
 		System.out.println(address);
 	}
-
-	/*
-	XmlBeanDefinitionReader -> DefaultBeanDefinitionDocumentReader -> BeanDefinitionParserDelegate -> NamespaceHandler -> BeanDefinitionParser
-
-	BeanDefinitionBuilder -> BeanDefinition -> BeanDefinitionHolder
-	 */
 }

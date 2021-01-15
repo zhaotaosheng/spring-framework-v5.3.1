@@ -1,4 +1,4 @@
-package com.taozi.day03;
+package com.taozi.day03.custom.label;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 

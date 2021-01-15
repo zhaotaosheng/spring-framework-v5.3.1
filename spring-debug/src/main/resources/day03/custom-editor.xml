@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="person" class="com.taozi.day03.entity.Person">
+		<property name="id" value="1"/>
+		<property name="name" value="桃子"/>
+		<property name="address" value="辽宁_沈阳"/>
+	</bean>
+	<!-- BeanFactoryPostProcessor -->
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="propertyEditorRegistrars">
+			<array>
+				<bean class="com.taozi.day03.custom.editor.AddressPropertyEditorRegistrar"/>
+			</array>
+		</property>
+	</bean>
+</beans>

@@ -1,4 +1,4 @@
-package com.taozi.day03;
+package com.taozi.day03.custom.label;
 
 import com.taozi.day03.entity.Address;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

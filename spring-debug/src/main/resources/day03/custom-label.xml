@@ -11,9 +11,21 @@
 	   http://www.taozi.com/schema/taozi.xsd">
 	<!-- org.springframework.context.config.ContextNamespaceHandler -->
 <!--	<context:property-placeholder location="classpath:day03/address.properties" />-->
-	<taozi:address id="address" province="辽宁" city="沈阳"/>
+<!--	<taozi:address id="address" province="辽宁" city="沈阳"/>-->
 <!--	<bean id="address" class="com.taozi.day03.entity.Address">-->
 <!--		<property name="province" value="辽宁"/>-->
 <!--		<property name="city" value="沈阳"/>-->
 <!--	</bean>-->
+	<bean id="person" class="com.taozi.day03.entity.Person">
+		<property name="id" value="1"/>
+		<property name="name" value="桃子"/>
+		<property name="address" value="辽宁_沈阳"/>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="propertyEditorRegistrars">
+			<array>
+				<bean class="com.taozi.day03.custom.editor.AddressPropertyEditorRegistrar"/>
+			</array>
+		</property>
+	</bean>
 </beans>

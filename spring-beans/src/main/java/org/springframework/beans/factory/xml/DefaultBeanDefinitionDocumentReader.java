@@ -156,7 +156,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			XmlReaderContext readerContext, Element root, @Nullable BeanDefinitionParserDelegate parentDelegate) {
 
 		BeanDefinitionParserDelegate delegate = new BeanDefinitionParserDelegate(readerContext);
-		// 记录根标签的default属性，比如default-lazy-init、default-autowire等
+		// 记录根标签的default属性，比如default-lazy-init、default-autowire等，更新到delegate.defaults
 		delegate.initDefaults(root, parentDelegate);
 		return delegate;
 	}

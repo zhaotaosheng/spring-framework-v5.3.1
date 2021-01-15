@@ -1,1 +1,1 @@
-http\://www.taozi.com/schema/taozi=com.taozi.day03.TaoZiNamespaceHandler
+http\://www.taozi.com/schema/taozi=com.taozi.day03.custom.label.TaoZiNamespaceHandler
