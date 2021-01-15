@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<xsd:schema xmlns="http://www.taozi.com/schema/taozi"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://www.taozi.com/schema/taozi">
+
+	<xsd:element name="address">
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string"/>
+			<xsd:attribute name="province" type="xsd:string"/>
+			<xsd:attribute name="city" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
