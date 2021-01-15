@@ -8,12 +8,11 @@
 		<property name="name" value="桃子"/>
 		<property name="address" value="辽宁_沈阳"/>
 	</bean>
-	<!-- BeanFactoryPostProcessor -->
-	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
-		<property name="propertyEditorRegistrars">
-			<array>
-				<bean class="com.taozi.day03.custom.editor.AddressPropertyEditorRegistrar"/>
-			</array>
-		</property>
-	</bean>
+<!--	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">-->
+<!--		<property name="propertyEditorRegistrars">-->
+<!--			<array>-->
+<!--				<bean class="com.taozi.day03.custom.editor.AddressPropertyEditorRegistrar"/>-->
+<!--			</array>-->
+<!--		</property>-->
+<!--	</bean>-->
 </beans>

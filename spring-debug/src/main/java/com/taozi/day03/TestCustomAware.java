@@ -14,7 +14,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author ZhaoTaoSheng
  * @since 2021/1/13 10:26
  */
-public class TestCustomAware extends ClassPathXmlApplicationContext{
+public class TestCustomAware extends ClassPathXmlApplicationContext {
 
 	public TestCustomAware(String... configLocations) throws BeansException {
 		super(configLocations);
@@ -22,7 +22,11 @@ public class TestCustomAware extends ClassPathXmlApplicationContext{
 
 	@Override
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// 忽略了注入，统一由后置处理器注入
 		beanFactory.addBeanPostProcessor(new AddressAwareProcessor(this));
+		// 自动注入时，忽略给定类型依赖的自动注入
+		beanFactory.ignoreDependencyType(Address.class);
+		// 自动注入时，忽略实现给定接口的setter注入
 		beanFactory.ignoreDependencyInterface(AddressAware.class);
 		super.prepareBeanFactory(beanFactory);
 	}
