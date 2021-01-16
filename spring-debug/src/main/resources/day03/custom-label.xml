@@ -10,10 +10,10 @@
 	   http://www.taozi.com/schema/taozi
 	   http://www.taozi.com/schema/taozi.xsd">
 	<!-- org.springframework.context.config.ContextNamespaceHandler -->
-<!--	<context:property-placeholder location="classpath:day03/address.properties" />-->
-	<taozi:address id="address" province="辽宁" city="沈阳"/>
-<!--	<bean id="address" class="com.taozi.day03.entity.Address">-->
-<!--		<property name="province" value="辽宁"/>-->
-<!--		<property name="city" value="沈阳"/>-->
-<!--	</bean>-->
+	<context:property-placeholder location="classpath:day03/address.properties" />
+<!--	<taozi:address id="address" province="辽宁" city="沈阳"/>-->
+	<bean id="address" class="com.taozi.day03.entity.Address">
+		<property name="province" value="${address.province}"/>
+		<property name="city" value="${address.city}"/>
+	</bean>
 </beans>
