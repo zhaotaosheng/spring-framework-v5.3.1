@@ -239,6 +239,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
 		int registryId = System.identityHashCode(registry);
+		// 标志此方法只允许执行一次
 		if (this.registriesPostProcessed.contains(registryId)) {
 			throw new IllegalStateException(
 					"postProcessBeanDefinitionRegistry already called on this post-processor against " + registry);
@@ -282,6 +283,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		String[] candidateNames = registry.getBeanDefinitionNames();
 
+		// 遍历所有的bd，筛选出来被配置注解修饰的
 		for (String beanName : candidateNames) {
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 			if (beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE) != null) {
@@ -289,6 +291,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
 			}
+			// 被Configuration/Component/ComponentScan/Import/ImportResource/Bean注解修饰的类
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
 			}
@@ -333,6 +336,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
 		do {
 			StartupStep processConfig = this.applicationStartup.start("spring.context.config-classes.parse");
+			// 解析所有的配置类
 			parser.parse(candidates);
 			parser.validate();
 
@@ -403,7 +407,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				// Configuration class (full or lite) or a configuration-derived @Bean method
 				// -> resolve bean class at this point...
 				AbstractBeanDefinition abd = (AbstractBeanDefinition) beanDef;
-				if (!abd.hasBeanClass()) {
+ 				if (!abd.hasBeanClass()) {
 					try {
 						abd.resolveBeanClass(this.beanClassLoader);
 					}
