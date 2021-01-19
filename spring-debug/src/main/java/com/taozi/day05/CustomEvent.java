@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationEvent;
  * @author ZhaoTaoSheng
  * @since 2021/1/19 11:03
  */
-@SuppressWarnings("seril")
+@SuppressWarnings("serial")
 public class CustomEvent extends ApplicationEvent {
 
 	/**
