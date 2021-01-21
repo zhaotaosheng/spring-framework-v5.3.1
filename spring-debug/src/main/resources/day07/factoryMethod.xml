@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="address1" class="com.taozi.day07.custom.AddressStaticFactory" factory-method="getAddress">
+		<constructor-arg value="AddressStaticFactory"/>
+	</bean>
+	<bean id="addressInstanceFactory" class="com.taozi.day07.custom.AddressInstanceFactory"/>
+	<bean id="address2" factory-bean="addressInstanceFactory" factory-method="getAddress">
+		<constructor-arg value="AddressInstanceFactory"/>
+	</bean>
+</beans>
