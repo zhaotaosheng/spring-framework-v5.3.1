@@ -1,9 +1,6 @@
 package com.taozi.day07;
 
-import com.taozi.day07.custom.AddressFactoryBean;
-import com.taozi.day07.custom.PersonFactoryBean;
 import com.taozi.day07.entity.Address;
-import com.taozi.day07.entity.Person;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
