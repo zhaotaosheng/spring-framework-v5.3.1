@@ -1,27 +1,47 @@
 package com.taozi.day10;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * @author taosheng.zhao
  * @since 2021/1/26 14:17
  */
 public class Aspect {
 
-	public void before(){
+	public Object before(JoinPoint joinPoint) throws InvocationTargetException, IllegalAccessException {
 		System.out.println("Aspect 类 方法 before");
+		System.out.println("-----------------------------------");
+		return "this is before";
 	}
 
-	public void after(){
+	public Object after(JoinPoint joinPoint) {
 		System.out.println("Aspect 类 方法 after");
+		System.out.println("-----------------------------------");
+		return "this is after";
 	}
 
-	public void afterReturning(){
+	public Object afterReturning(JoinPoint joinPoint, Object res) {
 		System.out.println("Aspect 类 方法 afterReturning");
-	}
-	public void afterThrowing(){
-		System.out.println("Aspect 类 方法 afterThrowing");
+		System.out.println(res);
+		System.out.println("-----------------------------------");
+		return "this is afterReturning";
 	}
 
-	public void around(){
+	public Object afterThrowing(JoinPoint joinPoint, Exception e) {
+		System.out.println("Aspect 类 方法 afterThrowing");
+		System.out.println(e.getMessage());
+		System.out.println("-----------------------------------");
+		return "this is afterThrowing";
+	}
+
+	public Object around(ProceedingJoinPoint pjp) throws Throwable {
 		System.out.println("Aspect 类 方法 around");
+		Object o = pjp.proceed();
+		System.out.println(o);
+		System.out.println("-----------------------------------");
+		return "this is around";
 	}
 }

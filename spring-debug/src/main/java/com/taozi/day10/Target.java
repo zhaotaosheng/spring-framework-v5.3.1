@@ -12,9 +12,11 @@ public class Target {
 
 	public void two(){
 		System.out.println("Target 类 方法 two");
+		throw new NullPointerException("fuck");
 	}
 
-	public void three(){
+	public String three(String str){
 		System.out.println("Target 类 方法 three");
+		return "this is three";
 	}
 }
