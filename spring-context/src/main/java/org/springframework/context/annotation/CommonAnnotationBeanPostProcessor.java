@@ -291,8 +291,11 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+		// 处理@PostConstruct、@PreDestroy
 		super.postProcessMergedBeanDefinition(beanDefinition, beanType, beanName);
+		// 在缓存中获取或者构建出@Resource、@WebServiceRef、@EJB所修饰方法的元数据信息（向上迭代所有父类）
 		InjectionMetadata metadata = findResourceMetadata(beanName, beanType, null);
+		// 将@Resource、@WebServiceRef、@EJB解析出的元数据设置到bd的externallyManagedConfigMembers
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
@@ -344,6 +347,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
+					// 构建@Resource、@WebServiceRef、@EJB相关的元数据
 					metadata = buildResourceMetadata(clazz);
 					this.injectionMetadataCache.put(cacheKey, metadata);
 				}
@@ -363,6 +367,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
 
+			// 处理当前类的所有字段，如果有@Resource、@WebServiceRef、@EJB修饰的加入到集合中
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {
 					if (Modifier.isStatic(field.getModifiers())) {
@@ -386,6 +391,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				}
 			});
 
+			// 处理当前类的所有方法，如果有@Resource、@WebServiceRef、@EJB修饰的加入到集合中
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
@@ -428,7 +434,9 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				}
 			});
 
+			// 父类的排在前边
 			elements.addAll(0, currElements);
+			// 迭代处理所有父类的字段和方法
 			targetClass = targetClass.getSuperclass();
 		}
 		while (targetClass != null && targetClass != Object.class);

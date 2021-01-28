@@ -243,7 +243,9 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+		// 在缓存中获取或者构建出@Autowired、@Value、@Inject所修饰方法的元数据信息（向上迭代所有父类）
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, beanType, null);
+		// 将@Autowired、@Value、@Inject解析出的元数据设置到bd的externallyManagedConfigMembers
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
@@ -451,6 +453,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
+					// 构建@Autowired、@Value、@Inject相关的元数据
 					metadata = buildAutowiringMetadata(clazz);
 					this.injectionMetadataCache.put(cacheKey, metadata);
 				}
@@ -470,6 +473,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
 
+			// 处理当前类的所有字段，如果有@Autowired、@Value、@Inject修饰的加入到集合中
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				MergedAnnotation<?> ann = findAutowiredAnnotation(field);
 				if (ann != null) {
@@ -484,6 +488,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 				}
 			});
 
+			// 处理当前类的所有方法，如果有@Autowired、@Value、@Inject修饰的加入到集合中
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
@@ -509,7 +514,9 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 				}
 			});
 
+			// 父类的排在前边
 			elements.addAll(0, currElements);
+			// 迭代处理所有父类的字段和方法
 			targetClass = targetClass.getSuperclass();
 		}
 		while (targetClass != null && targetClass != Object.class);

@@ -577,6 +577,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Allow post-processors to modify the merged bean definition.
+		// 使用MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition往BeanDefinition中设置属性
+		// externallyManagedInitMethods、externallyManagedDestroyMethods、externallyManagedConfigMembers
+		// CommonAnnotationBeanPostProcessor -> @Resource、@WebServiceRef、@EJB
+		// InitDestroyAnnotationBeanPostProcessor -> @PostConstruct、@PreDestroy
+		// AutowiredAnnotationBeanPostProcessor -> @Autowired、@Value、@Inject
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
@@ -1213,6 +1218,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// No special handling: simply use no-arg constructor.
+		// 使用无参构造进行实例化
 		return instantiateBean(beanName, mbd);
 	}
 

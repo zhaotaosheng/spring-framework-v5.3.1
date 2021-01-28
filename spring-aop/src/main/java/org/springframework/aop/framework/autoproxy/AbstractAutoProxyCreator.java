@@ -136,7 +136,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	private final Map<Object, Object> earlyProxyReferences = new ConcurrentHashMap<>(16);
 
 	private final Map<Object, Class<?>> proxyTypes = new ConcurrentHashMap<>(16);
-
+	// 存放所有处理过的的advisor和advice，在这个集合里的对象不需要增强
 	private final Map<Object, Boolean> advisedBeans = new ConcurrentHashMap<>(256);
 
 
@@ -245,9 +245,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
+			// 存放所有处理过的的advisor和advice
 			if (this.advisedBeans.containsKey(cacheKey)) {
 				return null;
 			}
+			// 如果是AOP相关的基础设施类或者是切面类，则直接当作advice添加到集合中返回
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
 				return null;
