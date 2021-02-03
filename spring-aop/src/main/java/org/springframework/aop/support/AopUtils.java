@@ -223,6 +223,12 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
+		// 进行切点表达式的匹配最重要的就是ClassFilter和MethodMatcher这两个方法的实现。
+		// MethodMatcher中有两个matches方法。一个参数是只有Method对象和targetClass，另一个参数有
+		// Method对象和targetClass对象还有一个Method的方法参数,他们两个的区别是：
+		// 两个参数的matches是用于静态的方法匹配 三个参数的matches是在运行期动态的进行方法匹配的
+		// 先进行ClassFilter的matches方法校验
+		// 首先这个类要在所匹配的规则下
 		if (!pc.getClassFilter().matches(targetClass)) {
 			return false;
 		}
@@ -238,15 +244,21 @@ public abstract class AopUtils {
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
 		}
 
+		// 创建一个集合用于保存targetClass的class对象
 		Set<Class<?>> classes = new LinkedHashSet<>();
 		if (!Proxy.isProxyClass(targetClass)) {
 			classes.add(ClassUtils.getUserClass(targetClass));
 		}
+		// 保存targetClass的所有父接口class对象
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
 
 		for (Class<?> clazz : classes) {
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
 			for (Method method : methods) {
+				// 只要有一个方法能匹配到就返回true
+				// 这里就会有一个问题：因为在一个目标中可能会有多个方法存在，有的方法是满足这个切点的匹配规则的
+				// 但是也可能有一些方法是不匹配切点规则的，这里检测的是只有一个Method满足切点规则就返回true了
+				// 所以在运行时进行方法拦截的时候还会有一次运行时的方法切点规则匹配
 				if (introductionAwareMethodMatcher != null ?
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :
 						methodMatcher.matches(method, targetClass)) {

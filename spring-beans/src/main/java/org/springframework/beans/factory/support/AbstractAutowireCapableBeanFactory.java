@@ -517,6 +517,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			// 在bean实例化前调用InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation可以直接返回一个代理类，或是做一些其他操作
+			// AbstractAutoProxyCreator(AspectJAwareAdvisorAutoProxyCreator) -> 第一次走到这的时候AOP相关的组件(advisor和advice)就直接完成了实例化和初始化
+			// 如果经过postProcessBeforeInstantiation可以直接返回一个具体实例则继续调用postProcessAfterInitialization方法做一些处理
+			// ApplicationContextAwareProcessor -> 调用回调函数
+			// InitDestroyAnnotationBeanPostProcessor -> 调用@PostConstruct方法
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -577,7 +582,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Allow post-processors to modify the merged bean definition.
-		// 使用MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition往BeanDefinition中设置属性
+		// 在Bean实例化后使用MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition往BeanDefinition中设置属性
 		// externallyManagedInitMethods、externallyManagedDestroyMethods、externallyManagedConfigMembers
 		// CommonAnnotationBeanPostProcessor -> @Resource、@WebServiceRef、@EJB
 		// InitDestroyAnnotationBeanPostProcessor -> @PostConstruct、@PreDestroy
@@ -610,7 +615,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
+			// 完成所有的属性填充工作，包括定义在xml中的properties和@Autowired、@Value、@Inject、@Resource修饰的属性，还有使用BPP手动设置的pv
 			populateBean(beanName, mbd, instanceWrapper);
+			// 完成所有的初始化工作，包括aware、BPP的before、@PostConstruct、InitializingBean、init-method、BPP的after
+			// 重要：通过BPP(AbstractAutoProxyCreator)的after里生成代理类
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -1205,6 +1213,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Candidate constructors for autowiring?
+		// 调用SmartInstantiationAwareBeanPostProcessor#determineCandidateConstructors来提供构造器
+		// AutowiredAnnotationBeanPostProcessor -> 主要是处理@Autowired修饰的构造函数
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
@@ -1385,6 +1395,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
 		// state of the bean before properties are set. This can be used, for example,
 		// to support styles of field injection.
+		// 在填充属性阶段首先使用InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation来决定是否填充属性
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
 				if (!bp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
@@ -1417,6 +1428,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (pvs == null) {
 				pvs = mbd.getPropertyValues();
 			}
+			// 在填充属性阶段使用InstantiationAwareBeanPostProcessor#postProcessProperties来自动注入属性
+			// CommonAnnotationBeanPostProcessor -> @Resource注入
+			// AutowiredAnnotationBeanPostProcessor -> @Autowired、@Value、@Inject注入
+			// 在填充属性阶段使用InstantiationAwareBeanPostProcessor#postProcessPropertyValues来自动注入属性（废弃）
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
 				PropertyValues pvsToUse = bp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
 				if (pvsToUse == null) {
@@ -1779,14 +1794,21 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}, getAccessControlContext());
 		}
 		else {
+			// 调用Aware回调函数BeanNameAware、BeanClassLoader、AwareBeanFactoryAware
 			invokeAwareMethods(beanName, bean);
 		}
 
 		Object wrappedBean = bean;
+		// 在Bean填充完属性后首先使用BeanPostProcessor#postProcessBeforeInitialization来做一些处理
+		// ApplicationContextAwareProcessor -> 调用回调函数
+		// InitDestroyAnnotationBeanPostProcessor -> 调用@PostConstruct方法
 		if (mbd == null || !mbd.isSynthetic()) {
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
+		// 这个时候bean的所有属性都设置完成了，如果bean本身是InitializingBean子类，并且afterPropertiesSet方法没有被@PostConstruct修饰
+		// 则调用可以afterPropertiesSet方法做最后的属性校验。如果BeanDefinition中定义了init-method，切与InitializingBean、
+		// @PostConstruct不冲突的情况下执行init-method方法
 		try {
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}
@@ -1795,6 +1817,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					(mbd != null ? mbd.getResourceDescription() : null),
 					beanName, "Invocation of init method failed", ex);
 		}
+		// 在Bean填充完属性后最后使用BeanPostProcessor#postProcessAfterInitialization来做一些处理
+		// AbstractAutoProxyCreator(AspectJAwareAdvisorAutoProxyCreator) -> 主要是用来生成代理类
 		if (mbd == null || !mbd.isSynthetic()) {
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
