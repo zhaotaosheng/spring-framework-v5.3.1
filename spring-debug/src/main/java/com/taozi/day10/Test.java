@@ -12,8 +12,8 @@ public class Test {
 	public static void main(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("day10/aop.xml");
 		Target bean = context.getBean(Target.class);
-		bean.one();
-		bean.two();
+//		bean.one();
+//		bean.two();
 		System.out.println(bean.three("iiiiiiii"));
 	}
 }

@@ -8,14 +8,23 @@
 	   http://www.springframework.org/schema/aop/spring-aop.xsd">
 	<bean id="target" class="com.taozi.day10.Target"/>
 	<bean id="aspect" class="com.taozi.day10.Aspect"/>
+	<bean id="aspect1" class="com.taozi.day10.Aspect1"/>
 	<aop:config>
-		<aop:aspect ref="aspect">
+		<aop:pointcut id="globalPointCut" expression="execution(* com.taozi.day10.Target.*(..))"/>
+		<aop:aspect ref="aspect" order="1">
 			<aop:pointcut id="pointCut" expression="execution(* com.taozi.day10.Target.*(..))"/>
 			<aop:before method="before" pointcut-ref="pointCut"/>
 			<aop:after method="after" pointcut-ref="pointCut"/>
 			<aop:after-returning method="afterReturning" pointcut-ref="pointCut" returning="res"/>
 			<aop:after-throwing method="afterThrowing" pointcut-ref="pointCut" throwing="e"/>
 			<aop:around method="around" pointcut-ref="pointCut"/>
+		</aop:aspect>
+		<aop:aspect ref="aspect1" order="0">
+			<aop:before method="before" pointcut-ref="globalPointCut"/>
+			<aop:after method="after" pointcut-ref="globalPointCut"/>
+			<aop:after-returning method="afterReturning" pointcut-ref="globalPointCut" returning="res"/>
+			<aop:after-throwing method="afterThrowing" pointcut-ref="globalPointCut" throwing="e"/>
+			<aop:around method="around" pointcut-ref="globalPointCut"/>
 		</aop:aspect>
 	</aop:config>
 </beans>
