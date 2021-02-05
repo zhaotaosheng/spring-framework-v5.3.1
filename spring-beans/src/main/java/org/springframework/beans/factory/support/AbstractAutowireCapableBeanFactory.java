@@ -632,8 +632,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		if (earlySingletonExposure) {
+			// 提前暴露出来的对象，目前只有循环依赖可能有，前边的循环对象会放入earlySingletonObjects
 			Object earlySingletonReference = getSingleton(beanName, false);
 			if (earlySingletonReference != null) {
+				// 代理的循环依赖时，前边的循环对象会将代理类放入earlySingletonObjects中，而exposedObject、bean这两个变量都指向原始对象
 				if (exposedObject == bean) {
 					exposedObject = earlySingletonReference;
 				}
@@ -982,6 +984,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
 		Object exposedObject = bean;
+		// SmartInstantiationAwareBeanPostProcessor#getEarlyBeanReference
+		// 主要是AspectJAwareAdvisorAutoProxyCreator来判断是否需要生成代理
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (SmartInstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().smartInstantiationAware) {
 				exposedObject = bp.getEarlyBeanReference(exposedObject, beanName);

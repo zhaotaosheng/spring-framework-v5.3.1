@@ -121,7 +121,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 			}
 		}
 		else {
-			// 设计属性，表示使用cglib代理
+			// 设置属性，表示使用cglib代理
 			proxyFactory.setProxyTargetClass(true);
 		}
 	}

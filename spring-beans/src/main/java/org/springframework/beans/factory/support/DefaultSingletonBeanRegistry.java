@@ -189,8 +189,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					if (singletonObject == null) {
 						singletonObject = this.earlySingletonObjects.get(beanName);
 						if (singletonObject == null) {
+							// 在singletonFactories中获取bean的lambda表达式
 							ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 							if (singletonFactory != null) {
+								// 流转到AbstractAutowireCapableBeanFactory#getEarlyBeanReference方法
+								// 发现该对象需要被代理时直接创建代理类，这也是singletonFactories不可或缺的意义
 								singletonObject = singletonFactory.getObject();
 								this.earlySingletonObjects.put(beanName, singletonObject);
 								this.singletonFactories.remove(beanName);
