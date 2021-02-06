@@ -17,6 +17,7 @@ public class Target {
 
 	public String three(String str){
 		System.out.println("Target 类 方法 three");
+		one();
 		return "this is three";
 	}
 }

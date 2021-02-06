@@ -96,9 +96,20 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 		// 在所有的候选通知器中找到和pointcut匹配的通知器
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
-		// 如果包含AspectJ advice，在通知链的顶端加一个ExposeInvocationInterceptor
+		// 如果包含AspectJ advice，在通知链的顶端加一个ExposeInvocationInterceptor，这个是通知链的第一个
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
+			// 对这些可用的Advisors进行排序，排序的条件跟Order、声明顺序、是否是After通知有关，这个会影响到所以advisor的执行顺序
+			// 排序的方法在PartialOrder.sort中， 是图的拓扑排序，首先用一个List<SortObject<T>>来表示图结构，SortObject表示图中的节点，
+			// 每个节点由三部分组成：当前的advice、比当前advice优先级高的smallerObjects集合、比当前advice优先级低的biggerObjects集合
+			// 将每个包装好的SortObject加入到图中，遍历时smallerObjects为空的代表优先级最高放到结果元素中的前面，然后移除该节点，继续遍历
+			// 如果图遍历时有环，也就是说找不到smallerObjects为空的节点，则环的部分不需要重排，直接返回
+			// 如何确定smallerObjects、biggerObjects的集合呢？在AspectJPrecedenceComparator#compare方法中
+			// 1.首先根据PriorityOrdered、Order表示的优先级进行排序，目前只有ExposeInvocationInterceptor实现了PriorityOrdered
+			// 2.如果是同一切面内的通知在按照声明顺序、是否为After通知排序(含有After字样的advice)，根据两个advice的声明顺序取差值
+			//   1）如果比较的两个advice中有一个是After通知，那么按照声明顺序的在前的优先级低
+			//   2）如果两个advice中没有After通知，那么按照声明顺序的在前的优先级高
+			//   PS:声明顺序是每个advice有个declarationOrder属性，在ConfigBeanDefinitionParser#parseAspect中按照子元素的顺序赋值的
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
 		}
 		return eligibleAdvisors;

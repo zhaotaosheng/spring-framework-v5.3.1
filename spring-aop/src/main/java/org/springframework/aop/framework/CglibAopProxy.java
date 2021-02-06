@@ -282,11 +282,14 @@ class CglibAopProxy implements AopProxy, Serializable {
 
 	private Callback[] getCallbacks(Class<?> rootClass) throws Exception {
 		// Parameters used for optimization choices...
+		// 一个方法内调用该类其他方法时，不会有增强的操作，当expose-proxy为true时可以达到同类中调用增强的效果
 		boolean exposeProxy = this.advised.isExposeProxy();
 		boolean isFrozen = this.advised.isFrozen();
 		boolean isStatic = this.advised.getTargetSource().isStatic();
 
 		// Choose an "aop" interceptor (used for AOP calls).
+		// AOP的第一个拦截器，所有的代理方法都先从该类的intercept方法开始，因为它位于Callback数组的0位置
+		// 根据cglib动态生成的字节码文件中，每个方法首先都会执行Callback[0]的intercept方法
 		Callback aopInterceptor = new DynamicAdvisedInterceptor(this.advised);
 
 		// Choose a "straight to target" interceptor. (used for calls that are
@@ -688,6 +691,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 				}
 				else {
 					// We need to create a method invocation...
+					// 需要创建一个MethodInvocation来将整个调用链串起来，实质是ReflectiveMethodInvocation
 					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
 				}
 				retVal = processReturnType(proxy, target, method, retVal);
