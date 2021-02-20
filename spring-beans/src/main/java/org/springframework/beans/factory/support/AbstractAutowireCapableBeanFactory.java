@@ -520,8 +520,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 在bean实例化前调用InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation可以直接返回一个代理类，或是做一些其他操作
 			// AbstractAutoProxyCreator(AspectJAwareAdvisorAutoProxyCreator) -> 第一次走到这的时候AOP相关的组件(advisor和advice)就直接完成了实例化和初始化
 			// 如果经过postProcessBeforeInstantiation可以直接返回一个具体实例则继续调用postProcessAfterInitialization方法做一些处理
-			// ApplicationContextAwareProcessor -> 调用回调函数
-			// InitDestroyAnnotationBeanPostProcessor -> 调用@PostConstruct方法
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
