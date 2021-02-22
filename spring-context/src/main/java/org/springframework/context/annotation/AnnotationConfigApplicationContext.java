@@ -65,9 +65,13 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		// 首先在父类构造器中实例化了DefaultListableBeanFactory，赋值到this.beanFactory属性中
 		StartupStep createAnnotatedBeanDefReader = this.getApplicationStartup().start("spring.context.annotated-bean-reader.create");
+		// 初始化AnnotatedBeanDefinitionReader对象，其内部有一个用于条件计算的属性this.conditionEvaluator
+		// 注册相关注解解析器，主要是ConfigurationClassPostProcessor、AutowiredAnnotationBeanPostProcessor等
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		createAnnotatedBeanDefReader.end();
+		// 初始化ClassPathBeanDefinitionScanner，为@Component注册默认过滤器，如果存在ManagedBean和Named属性也添加到this.includeFilters过滤器中
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
